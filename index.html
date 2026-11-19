@@ -1,162 +1,619 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Horario de Mari</title>
-    <style>
-      body {
-        background-color: #ffeef5;
-        font-family: 'Segoe UI', sans-serif;
-        margin: 0;
-        padding: 0;
-      }
-      h1 {
-        text-align: center;
-        margin-top: 1rem;
-        color: #d63384;
-      }
-      .controls {
-        text-align: center;
-        margin-bottom: 1rem;
-      }
-      button {
-        margin: 0 0.5rem;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 5px;
-        background-color: #d63384;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      .calendar {
-        display: grid;
-        grid-template-columns: 80px repeat(6, 1fr);
-        grid-auto-rows: 60px;
-        gap: 1px;
-        background-color: #d6d6d6;
-        margin: 1rem;
-      }
-      .cell, .header, .time {
-        background-color: #fff;
-        padding: 4px;
-        text-align: center;
-        font-size: 12px;
-        overflow: hidden;
-        cursor: pointer;
-      }
-      .header {
-        background-color: #ffcae0;
-        font-weight: bold;
-      }
-      .time {
-        background-color: #ffe2f0;
-        font-weight: bold;
-      }
-      .selected {
-        outline: 3px solid #ff0077;
-        background-color: #ffb3d1 !important;
-      }
-      .matematica { background-color: #c0ebff; }
-      .lenguaje { background-color: #ffd3b6; }
-      .conta { background-color: #e2f0cb; }
-      .psico { background-color: #e6ccff; }
-      .voley { background-color: #ffe082; }
-      .voz { background-color: #f4cccc; }
-    </style>
-  </head>
-  <body>
-    <h1>Horario de Mari</h1>
-    <div class="controls">
-      <button onclick="reiniciarHorario()">Reiniciar horario</button>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flujograma de cursos · Negocios Internacionales · UP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky-50:#f1f9ff; --sky-100:#e0f2fe; --sky-200:#bae6fd; --sky-300:#7dd3fc;
+  --sky-400:#38bdf8; --sky-500:#0ea5e9; --blue-500:#2f7de1; --blue-600:#1f63c9;
+  --blue-700:#1a4fa3; --blue-900:#0f2a52; --ink:#17365f; --muted:#6b86a6;
+  --lock-bg:#eaf0f6; --lock-line:#b7c9dc;
+  --radius:16px;
+  --shadow:0 6px 18px rgba(31,99,201,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(900px 500px at 10% -10%, #c6ebff 0%, transparent 60%),
+    radial-gradient(800px 500px at 100% 0%, #d6e6ff 0%, transparent 55%),
+    linear-gradient(180deg,#eaf7ff 0%,#dcefff 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+}
+h1,h2,.poppins{font-family:'Poppins','Nunito',sans-serif}
+
+/* ---------- Cabecera ---------- */
+header.top{padding:28px clamp(16px,4vw,48px) 8px}
+.brand{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:space-between}
+.brand h1{margin:0;font-size:clamp(1.3rem,2.6vw,2rem);color:var(--blue-900);letter-spacing:-.3px}
+.brand h1 span{color:var(--blue-500)}
+.brand p{margin:4px 0 0;color:var(--muted);font-weight:600;font-size:.95rem}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{
+  font:inherit;font-weight:700;font-size:.85rem;border:0;cursor:pointer;
+  padding:9px 16px;border-radius:999px;background:#fff;color:var(--blue-600);
+  box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s,background .15s;
+}
+.btn:hover{transform:translateY(-1px);background:var(--sky-50)}
+.btn.on{background:var(--blue-600);color:#fff}
+
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px;
+}
+.stat{
+  background:rgba(255,255,255,.8);backdrop-filter:blur(6px);
+  border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow);
+}
+.stat small{display:block;color:var(--muted);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.6px}
+.stat b{font-family:'Poppins',sans-serif;font-size:1.5rem;color:var(--blue-700)}
+.stat b i{font-style:normal;font-size:.9rem;color:var(--muted);font-weight:600}
+.progress-wrap{grid-column:1/-1}
+.bar{height:14px;border-radius:999px;background:var(--sky-100);overflow:hidden;display:flex;margin-top:8px}
+.bar .done{background:linear-gradient(90deg,var(--blue-600),var(--sky-400));transition:width .4s}
+.bar .doing{background:repeating-linear-gradient(45deg,var(--sky-300),var(--sky-300) 6px,#a5e3ff 6px,#a5e3ff 12px);transition:width .4s}
+.bar-label{display:flex;justify-content:space-between;font-weight:700;font-size:.85rem;color:var(--blue-700)}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:16px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;font-weight:700;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+.dot.locked{background:var(--lock-bg);border:2px dashed var(--lock-line)}
+.dot.open{background:#fff;border:2px solid var(--sky-400)}
+.dot.doing{background:var(--sky-200);border:2px solid var(--sky-500)}
+.dot.done{background:linear-gradient(135deg,var(--blue-600),var(--sky-400))}
+.hint{margin:10px 0 0;color:var(--muted);font-size:.85rem;font-weight:600}
+
+/* ---------- Tablero ---------- */
+.scroller{overflow:auto;padding:18px clamp(16px,4vw,48px) 40px}
+.board{position:relative;display:flex;gap:46px;width:max-content;align-items:flex-start}
+svg#links{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
+.cycle{position:relative;z-index:1;width:236px;flex:none}
+.cycle-head{
+  color:#fff;border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;
+  box-shadow:var(--shadow);position:sticky;top:8px;z-index:3;
+}
+.cycle-head h2{margin:0;font-size:1.05rem}
+.cycle-head .meta{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;opacity:.92;margin-top:2px}
+.cycle-head .mini{height:5px;background:rgba(255,255,255,.3);border-radius:99px;margin-top:8px;overflow:hidden}
+.cycle-head .mini i{display:block;height:100%;background:#fff;border-radius:99px;transition:width .4s}
+.cards{display:flex;flex-direction:column;gap:12px}
+
+/* ---------- Tarjetas ---------- */
+.card{
+  position:relative;text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%;
+  border-radius:var(--radius);padding:12px 13px 11px;background:#fff;
+  border:2px solid var(--sky-300);box-shadow:var(--shadow);
+  transition:transform .15s,box-shadow .15s,opacity .2s,filter .2s;
+  display:flex;flex-direction:column;gap:6px;
+}
+.card:hover,.card:focus-visible{transform:translateY(-2px);box-shadow:0 10px 24px rgba(31,99,201,.22);outline:none}
+.card:focus-visible{border-color:var(--blue-600)}
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.card .code{font-size:.68rem;font-weight:800;letter-spacing:.5px;color:var(--muted)}
+.card .cr{font-size:.7rem;font-weight:800;background:var(--sky-100);color:var(--blue-700);padding:2px 8px;border-radius:99px}
+.card .name{font-family:'Poppins',sans-serif;font-weight:600;font-size:.86rem;line-height:1.25;color:var(--blue-900)}
+.card .opts{font-size:.68rem;line-height:1.3;color:var(--muted);font-weight:600}
+.card .foot{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap}
+.chip{font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.chip b{font-size:.95rem}
+.opens{font-size:.7rem;font-weight:800;color:var(--blue-600);background:var(--sky-50);padding:3px 8px;border-radius:99px;border:1px solid var(--sky-200)}
+
+.card.locked{background:var(--lock-bg);border:2px dashed var(--lock-line);box-shadow:none}
+.card.locked .name{color:#6d86a1}
+.card.locked .cr{background:#dbe5ef;color:#6d86a1}
+.card.locked .chip{background:#fff;color:#5a7594;border:1px solid var(--lock-line)}
+.card.locked .opens{background:#f3f7fb;color:#7f97b0;border-color:#d5e0ec}
+
+.card.open{border-color:var(--sky-400);box-shadow:0 0 0 4px rgba(56,189,248,.18),var(--shadow)}
+.card.open .chip{background:var(--sky-100);color:var(--blue-600)}
+
+.card.doing{
+  border-color:var(--sky-500);
+  background:linear-gradient(135deg,#e6f7ff,#cdeeff);
+}
+.card.doing .chip{background:var(--sky-500);color:#fff}
+.card.doing .chip::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff;margin-right:6px;animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.25;transform:scale(.7)}}
+
+.card.done{
+  border-color:transparent;color:#fff;
+  background:linear-gradient(135deg,var(--blue-600),var(--sky-400));
+}
+.card.done .name{color:#fff}
+.card.done .code{color:rgba(255,255,255,.8)}
+.card.done .cr{background:rgba(255,255,255,.25);color:#fff}
+.card.done .chip{background:#fff;color:var(--blue-600)}
+.card.done .opens{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.35)}
+
+.card.dim{opacity:.22;filter:saturate(.6)}
+.card.hl-pre{box-shadow:0 0 0 4px rgba(31,99,201,.35),var(--shadow)}
+.card.hl-post{box-shadow:0 0 0 4px rgba(6,182,212,.4),var(--shadow)}
+.card.hl-self{box-shadow:0 0 0 4px rgba(15,42,82,.35),var(--shadow)}
+
+/* ---------- Modal ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(15,42,82,.45);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;padding:16px;z-index:50;
+}
+.overlay.show{display:flex}
+.modal{
+  width:min(480px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:22px;
+  padding:22px;box-shadow:0 24px 60px rgba(15,42,82,.35);animation:pop .18s ease-out;
+}
+@keyframes pop{from{transform:scale(.95);opacity:0}}
+.modal .m-cycle{font-size:.75rem;font-weight:800;color:var(--sky-500);text-transform:uppercase;letter-spacing:.8px}
+.modal h3{font-family:'Poppins',sans-serif;margin:4px 0 2px;font-size:1.2rem;color:var(--blue-900);line-height:1.25}
+.modal .m-sub{color:var(--muted);font-weight:700;font-size:.82rem}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 6px}
+.seg button{
+  font:inherit;font-weight:800;font-size:.82rem;padding:11px 6px;border-radius:12px;cursor:pointer;
+  border:2px solid var(--sky-200);background:var(--sky-50);color:var(--blue-700);transition:.15s;
+}
+.seg button:hover:not(:disabled){border-color:var(--sky-400)}
+.seg button.sel[data-v="0"]{background:#fff;border-color:var(--blue-700)}
+.seg button.sel[data-v="1"]{background:var(--sky-500);border-color:var(--sky-500);color:#fff}
+.seg button.sel[data-v="2"]{background:linear-gradient(135deg,var(--blue-600),var(--sky-400));border-color:transparent;color:#fff}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.warn{background:#fff7e6;border:1px solid #ffd58a;color:#8a5a00;border-radius:12px;padding:10px 12px;font-size:.82rem;font-weight:700;margin-top:8px}
+.m-sec{margin-top:16px}
+.m-sec h4{margin:0 0 8px;font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.m-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.m-list li{
+  display:flex;align-items:center;gap:8px;font-size:.86rem;font-weight:700;
+  background:var(--sky-50);border-radius:10px;padding:8px 10px;color:var(--blue-900);
+}
+.m-list li.ok{background:#e4f6ff}
+.m-list li .tick{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:.7rem;font-weight:900}
+.m-list li.ok .tick{background:var(--blue-600);color:#fff}
+.m-list li.no .tick{background:#fff;border:2px dashed var(--lock-line);color:#8aa0b8}
+.m-list li.next .tick{background:var(--sky-200);color:var(--blue-700)}
+.m-list li.go{cursor:pointer}
+.m-list li.go:hover{background:var(--sky-100)}
+.m-none{color:var(--muted);font-weight:700;font-size:.85rem}
+.close{margin-top:18px;width:100%}
+
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;pointer-events:none;
+  background:var(--blue-900);color:#fff;font-weight:700;font-size:.85rem;padding:11px 18px;border-radius:999px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);transition:.25s;z-index:60;max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;color:var(--muted);font-size:.78rem;font-weight:600;padding:0 16px 28px}
+
+@media (max-width:600px){
+  .cycle{width:210px}
+  .board{gap:36px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div>
+      <h1>Flujograma de cursos · <span>Negocios Internacionales</span></h1>
+      <p>Universidad del Pacífico · Plan de estudios 2027 · Facultad de Ciencias Empresariales</p>
     </div>
-    <div class="calendar" id="calendar"></div>
+    <div class="actions">
+      <button class="btn" id="btnLines">Mostrar todas las flechas</button>
+      <button class="btn" id="btnReset">Reiniciar avance</button>
+    </div>
+  </div>
 
-    <script>
-      const calendar = document.getElementById("calendar");
-      const days = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-      const hours = Array.from({ length: 13 }, (_, i) => i + 7); // 7am - 7pm
+  <div class="stats">
+    <div class="stat"><small>Créditos aprobados</small><b id="sCred">0 <i>/ 0</i></b></div>
+    <div class="stat"><small>Cursos finalizados</small><b id="sDone">0 <i>/ 0</i></b></div>
+    <div class="stat"><small>En curso</small><b id="sDoing">0</b></div>
+    <div class="stat"><small>Disponibles ahora</small><b id="sOpen">0</b></div>
+    <div class="stat progress-wrap">
+      <div class="bar-label"><span>Avance de la carrera</span><span id="sPct">0%</span></div>
+      <div class="bar"><div class="done" id="barDone"></div><div class="doing" id="barDoing"></div></div>
+    </div>
+  </div>
 
-      // Headers
-      days.forEach(day => {
-        const div = document.createElement("div");
-        div.textContent = day;
-        div.className = day === "" ? "time" : "header";
-        calendar.appendChild(div);
-      });
+  <div class="toolbar">
+    <div class="filters" id="filters"></div>
+    <div class="legend">
+      <span><i class="dot locked"></i>Bloqueado</span>
+      <span><i class="dot open"></i>Disponible</span>
+      <span><i class="dot doing"></i>En curso</span>
+      <span><i class="dot done"></i>Finalizado</span>
+    </div>
+  </div>
+  <p class="hint">Haz clic en un curso para marcarlo como en curso o finalizado. Pasa el cursor (o abre un curso) para ver sus conexiones: <b style="color:var(--blue-600)">azul oscuro</b> = requisitos, <b style="color:#0891b2">turquesa</b> = cursos que abre.</p>
+</header>
 
-      // Time rows and cells
-      hours.forEach(hour => {
-        days.forEach((day, i) => {
-          const div = document.createElement("div");
-          if (i === 0) {
-            div.className = "time";
-            div.textContent = `${hour}:00`;
-          } else {
-            div.className = "cell";
-            div.dataset.day = day;
-            div.dataset.hour = hour;
-          }
-          calendar.appendChild(div);
-        });
-      });
+<div class="scroller" id="scroller">
+  <div class="board" id="board">
+    <svg id="links" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="aBase" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7fb4ea"/></marker>
+        <marker id="aPre" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1f63c9"/></marker>
+        <marker id="aPost" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0891b2"/></marker>
+      </defs>
+      <g id="linkLayer"></g>
+    </svg>
+  </div>
+</div>
 
-      const opciones = [
-        { curso: "Matemática I", clase: "matematica", profesor: "Prof. Ruiz", dia: "Lunes", hora: 9 },
-        { curso: "Matemática I", clase: "matematica", profesor: "Prof. Ruiz", dia: "Miércoles", hora: 10 },
-        { curso: "Lenguaje I", clase: "lenguaje", profesor: "Prof. Torres", dia: "Martes", hora: 10 },
-        { curso: "Lenguaje I", clase: "lenguaje", profesor: "Prof. Torres", dia: "Jueves", hora: 12 },
-        { curso: "Contabilidad Intermedia", clase: "conta", profesor: "Prof. Vargas", dia: "Miércoles", hora: 11 },
-        { curso: "Contabilidad Intermedia", clase: "conta", profesor: "Prof. Vargas", dia: "Viernes", hora: 10 },
-        { curso: "Psicología", clase: "psico", profesor: "Prof. Salazar", dia: "Jueves", hora: 8 },
-        { curso: "Psicología", clase: "psico", profesor: "Prof. Salazar", dia: "Viernes", hora: 12 },
-        { curso: "Vóley", clase: "voley", profesor: "Coach Linares", dia: "Viernes", hora: 17 },
-        { curso: "Vóley", clase: "voley", profesor: "Coach Linares", dia: "Sábado", hora: 10 },
-        { curso: "Voz", clase: "voz", profesor: "Prof. Mena", dia: "Sábado", hora: 12 },
-        { curso: "Voz", clase: "voz", profesor: "Prof. Mena", dia: "Sábado", hora: 9 },
-      ];
+<div class="overlay" id="overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" id="modal"></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<footer>Tu avance se guarda automáticamente en este navegador.</footer>
 
-      const seleccionadas = [];
+<script>
+/* =========================================================
+   DATOS · fuente: malla "Negocios Internacionales – Plan 2027" (PDF)
+   y documento "Cursos UP y requisitos".
+   Para editar un requisito, solo cambia la lista `req` del curso.
+   ========================================================= */
+const CURSOS = [
+  // ---- Ciclo 0
+  {id:'fmat', c:0, n:'Fundamentos de Matemáticas', cr:4, req:[]},
+  {id:'finf', c:0, n:'Fundamentos de Informática', cr:3, req:[]},
+  {id:'flen', c:0, n:'Fundamentos de Lenguaje', cr:3, req:[]},
+  // ---- Ciclo 1
+  {id:'mat1', c:1, n:'Matemáticas I', cr:5, req:['fmat']},
+  {id:'len1', c:1, n:'Lenguaje I', cr:4, req:['flen']},
+  {id:'inego', c:1, n:'Introducción a los Negocios', cr:4, req:[]},
+  {id:'cont1', c:1, n:'Contabilidad Financiera I', cr:4, req:[]},
+  // ---- Ciclo 2
+  {id:'ini', c:2, n:'Introducción a los Negocios Internacionales', cr:3, req:[]},
+  {id:'doe', c:2, n:'Diseño Organizacional y Estrategia', cr:3, req:['inego']},
+  {id:'eco1', c:2, n:'Economía General I', cr:5, req:['mat1']},
+  {id:'len2', c:2, n:'Lenguaje II', cr:4, req:['len1']},
+  {id:'cont2', c:2, n:'Contabilidad Financiera II', cr:5, req:['cont1']},
+  // ---- Ciclo 3
+  {id:'est1', c:3, n:'Estadística I', cr:4, req:['mat1','finf']},
+  {id:'ctd', c:3, n:'Contabilidad para la Toma de Decisiones I', cr:5, req:['cont2']},
+  {id:'eco2', c:3, n:'Economía General II', cr:5, req:['eco1']},
+  {id:'bcs', c:3, n:'Bloque de Lecturas en Ciencias Sociales', cr:4, req:['flen'],
+    opts:'Sociología · Psicología y Sociedad · Antropología · Ciencia Política'},
+  {id:'bhum', c:3, n:'Bloque de Lecturas en Humanidades', cr:4, req:['flen'],
+    opts:'Filosofía · Historia Crítica del Perú · Literatura'},
+  // ---- Ciclo 4
+  {id:'daf', c:4, n:'Data Analysis for Business', cr:3, req:['finf']},
+  {id:'feon', c:4, code:'1MN370', n:'Fundamentos Económicos y Organizacionales para los Negocios', cr:4, req:['ini','doe','eco1']},
+  {id:'tci', c:4, code:'1MN400', n:'Teoría del Comercio Internacional y Procesos de Integración', cr:4, req:['ini','eco1']},
+  {id:'ffin', c:4, code:'1F0112', n:'Fundamentos de Finanzas', cr:4, req:['finf','cont1']},
+  {id:'bpc', c:4, n:'Bloque de Lecturas en Pensamiento Científico', cr:4, req:['flen'],
+    opts:'Epistemología de las Ciencias Empresariales · Cosmología y Ciencias de la Vida · Pensamiento Sistemático · Historia y Filosofía de la Ciencia'},
+  {id:'iad', c:4, n:'Investigación Académica en la Era Digital', cr:4, req:['len2','est1']},
+  // ---- Ciclo 5
+  {id:'amn', c:5, code:'141036', n:'Análisis Multivariado para los Negocios', cr:4, req:['est1']},
+  {id:'mkt', c:5, n:'Marketing Estratégico y Dirección Comercial', cr:4, req:[]},
+  {id:'fc1', c:5, code:'1F0120', n:'Finanzas Corporativas I', cr:5, req:['est1','ffin']},
+  {id:'gsoe', c:5, code:'1MN003', n:'Gestión Sostenible de la Oferta Exportable', cr:4, req:['feon']},
+  {id:'aci', c:5, code:'1MN366', n:'Administración del Comercio Internacional', cr:4, req:['est1','daf','feon','tci']},
+  // ---- Ciclo 6
+  {id:'isbm', c:6, n:'Information System for Business Management', cr:4, req:['doe','daf']},
+  {id:'log', c:6, code:'1MN005', n:'Logística Internacional', cr:4, req:['gsoe','aci']},
+  {id:'iaff', c:6, code:'1MN007', n:'International Affairs', cr:4, req:['aci']},
+  {id:'tec', c:6, n:'Tecnologías para la Investigación de Mercados Internacionales', cr:3, req:['aci']},
+  {id:'bdl', c:6, n:'Bloque de Desarrollo del Liderazgo', cr:4, req:[],
+    opts:'Emprendimiento e Innovación · Liderazgo Organizacional · Cristianismo, Liderazgo y Propósito · Cultura Digital e IA'},
+  // ---- Ciclo 7
+  {id:'die', c:7, code:'1MN006', n:'Dirección Internacional de Empresas', cr:4, req:['eco2','aci','amn','log']},
+  {id:'ifin', c:7, code:'1F0326', n:'International Finance', cr:4, req:['fc1']},
+  {id:'ccim', c:7, code:'1MN009', n:'Cross Cultural & International Management', cr:4, req:['iaff','aci']},
+  {id:'der', c:7, code:'180092', n:'Derecho para los Negocios Internacionales', cr:4, req:['aci']},
+  {id:'bci1', c:7, n:'Bloque de Cursos Interdisciplinarios (1)', cr:4, req:['bpc','bhum'],
+    opts:'Competitividad, Empresa y Sociedad · Historia Económica y Empresarial · Religiones, Culturas y Economía · Pensamiento Social Contemporáneo · Procesos Políticos Contemporáneos · Sostenibilidad y Gestión Ambiental'},
+  // ---- Ciclo 8
+  {id:'gmm', c:8, n:'Global Market Management', cr:4, req:['mkt','tec','die']},
+  {id:'nci', c:8, code:'1MN401', n:'Negociaciones Comerciales Internacionales', cr:4, req:['die','ifin','ccim']},
+  {id:'ihrm', c:8, code:'1MN375', n:'International Human Resources Management', cr:4, req:['die','ccim']},
+  {id:'de', c:8, code:'149078', n:'Dirección Estratégica', cr:4, req:['die','fc1']},
+  {id:'bci2', c:8, n:'Bloque de Cursos Interdisciplinarios (2)', cr:4, req:['bpc','bhum'],
+    opts:'Mismas opciones del bloque del ciclo 7'},
+  // ---- Ciclo 9
+  {id:'lab', c:9, n:'Laboratorio para la Internacionalización de la Empresa', cr:4, req:['de','gmm','nci','ccim']},
+  {id:'ibp', c:9, code:'1MN374', n:'International Business Plan', cr:5, req:['gmm','ihrm','der','ifin','ctd']},
+  {id:'etica', c:9, n:'Ética', cr:4, req:[]},
+  // ---- Ciclo 10
+  {id:'pian', c:10, n:'Proyecto de Investigación Aplicada en Negocios Internacionales', cr:4, req:['isbm','gmm','ihrm']},
+  {id:'psoc', c:10, n:'Proyección Social', cr:4, req:['bci1','bci2']},
+];
 
-      opciones.forEach(({ curso, clase, profesor, dia, hora }) => {
-        const cell = document.querySelector(`.cell[data-day="${dia}"][data-hour="${hora}"]`);
-        if (cell) {
-          cell.textContent += `${curso}\n(${profesor})`;
-          cell.classList.add(clase);
-          cell.onclick = () => {
-            // Validar si ya está seleccionada otra opción del mismo curso
-            const mismoCurso = seleccionadas.find(sel => sel.curso === curso);
-            if (mismoCurso) {
-              const oldCell = document.querySelector(`.cell[data-day="${mismoCurso.dia}"][data-hour="${mismoCurso.hora}"]`);
-              if (oldCell) oldCell.classList.remove("selected");
-              seleccionadas.splice(seleccionadas.indexOf(mismoCurso), 1);
-            }
+/* =========================================================
+   LÓGICA
+   ========================================================= */
+const KEY = 'up-ni-flujograma-2027-v1';
+const BY = Object.fromEntries(CURSOS.map(c => [c.id, c]));
+const POST = {}; CURSOS.forEach(c => POST[c.id] = []);
+CURSOS.forEach(c => c.req.forEach(r => POST[r].push(c.id)));
+const NCYCLES = Math.max(...CURSOS.map(c => c.c)) + 1;
+const TOTAL_CR = CURSOS.reduce((s, c) => s + c.cr, 0);
 
-            // Validar conflictos de horario
-            const conflicto = seleccionadas.find(sel => sel.dia === dia && sel.hora === hora);
-            if (conflicto) {
-              alert("Conflicto de horario con " + conflicto.curso);
-              return;
-            }
+let st = {};            // id -> 0 pendiente · 1 en curso · 2 finalizado
+let filter = 'all';
+let showAll = false;
+let hoverId = null;
+let selectedId = null;
 
-            cell.classList.add("selected");
-            seleccionadas.push({ curso, dia, hora });
-            alert(`Agregado: ${curso} con ${profesor} - ${dia} a las ${hora}:00`);
-          };
-        }
-      });
+function load(){
+  try{ st = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ st = {}; }
+  CURSOS.forEach(c => { if(![0,1,2].includes(st[c.id])) st[c.id] = 0; });
+  // sanea: nada avanzado si sus requisitos no están finalizados
+  let changed = true;
+  while(changed){
+    changed = false;
+    CURSOS.forEach(c => { if(st[c.id] > 0 && !isOpen(c.id)){ st[c.id] = 0; changed = true; } });
+  }
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
 
-      function reiniciarHorario() {
-        seleccionadas.forEach(({ dia, hora }) => {
-          const cell = document.querySelector(`.cell[data-day="${dia}"][data-hour="${hora}"]`);
-          if (cell) cell.classList.remove("selected");
-        });
-        seleccionadas.length = 0;
-        alert("Horario reiniciado.");
-      }
-    </script>
-  </body>
+const isOpen  = id => BY[id].req.every(r => st[r] === 2);
+const missing = id => BY[id].req.filter(r => st[r] !== 2);
+function stateOf(id){
+  if(st[id] === 2) return 'done';
+  if(st[id] === 1) return 'doing';
+  return isOpen(id) ? 'open' : 'locked';
+}
+function descendants(id){
+  const out = new Set(), q = [id];
+  while(q.length){ POST[q.shift()].forEach(p => { if(!out.has(p)){ out.add(p); q.push(p); } }); }
+  return [...out];
+}
+
+/* ---------- Construcción del DOM ---------- */
+const board = document.getElementById('board');
+const els = {};
+const headEls = [];
+
+function build(){
+  for(let i = 0; i < NCYCLES; i++){
+    const col = document.createElement('section');
+    col.className = 'cycle';
+    const hue = 196 + (i / (NCYCLES - 1)) * 22;
+    const light = 46 - (i / (NCYCLES - 1)) * 12;
+    const list = CURSOS.filter(c => c.c === i);
+    const cr = list.reduce((s, c) => s + c.cr, 0);
+    col.innerHTML = `
+      <div class="cycle-head" style="background:linear-gradient(135deg,hsl(${hue} 92% ${light}%),hsl(${hue + 8} 88% ${light + 8}%))">
+        <h2>Ciclo ${i}</h2>
+        <div class="meta"><span data-k="n">0/${list.length} cursos</span><span>${cr} créditos</span></div>
+        <div class="mini"><i data-k="bar"></i></div>
+      </div>
+      <div class="cards"></div>`;
+    headEls[i] = col.querySelector('.cycle-head');
+    const wrap = col.querySelector('.cards');
+    list.forEach(c => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'card';
+      b.dataset.id = c.id;
+      b.innerHTML = `
+        <div class="top"><span class="code">${c.code || ''}</span><span class="cr">${c.cr} cr.</span></div>
+        <div class="name">${c.n}</div>
+        ${c.opts ? `<div class="opts">${c.opts}</div>` : ''}
+        <div class="foot"><span class="chip" data-k="chip"></span><span class="opens" data-k="opens"></span></div>`;
+      b.addEventListener('click', () => openModal(c.id));
+      b.addEventListener('mouseenter', () => { hoverId = c.id; draw(); applyHighlight(); });
+      b.addEventListener('mouseleave', () => { hoverId = null; draw(); applyHighlight(); });
+      b.addEventListener('focus', () => { hoverId = c.id; draw(); applyHighlight(); });
+      b.addEventListener('blur', () => { hoverId = null; draw(); applyHighlight(); });
+      els[c.id] = b;
+      wrap.appendChild(b);
+    });
+    board.appendChild(col);
+  }
+}
+
+/* ---------- Actualización de la vista ---------- */
+function update(){
+  let doneCr = 0, doingCr = 0, nDone = 0, nDoing = 0, nOpen = 0;
+  CURSOS.forEach(c => {
+    const s = stateOf(c.id), el = els[c.id];
+    el.classList.remove('locked','open','doing','done');
+    el.classList.add(s);
+    const chip = el.querySelector('[data-k=chip]');
+    const m = missing(c.id).length;
+    if(s === 'locked')      chip.innerHTML = `🔒 ${m === 1 ? 'Falta' : 'Faltan'} <b>${m}</b>`;
+    else if(s === 'open')   chip.textContent = 'Disponible';
+    else if(s === 'doing')  chip.textContent = 'En curso';
+    else                    chip.textContent = '✓ Finalizado';
+    const o = el.querySelector('[data-k=opens]');
+    const n = POST[c.id].length;
+    if(n){
+      o.style.display = '';
+      o.innerHTML = `🔓 Abre <b>${n}</b>`;
+      o.title = 'Abre: ' + POST[c.id].map(x => BY[x].n).join(' · ');
+    }else{
+      o.style.display = 'none';
+    }
+    if(s === 'done'){ doneCr += c.cr; nDone++; }
+    if(s === 'doing'){ doingCr += c.cr; nDoing++; }
+    if(s === 'open') nOpen++;
+    const match = filter === 'all' || filter === s;
+    el.classList.toggle('dim', !match);
+  });
+
+  for(let i = 0; i < NCYCLES; i++){
+    const list = CURSOS.filter(c => c.c === i);
+    const d = list.filter(c => st[c.id] === 2).length;
+    headEls[i].querySelector('[data-k=n]').textContent = `${d}/${list.length} cursos`;
+    headEls[i].querySelector('[data-k=bar]').style.width = (d / list.length * 100) + '%';
+  }
+
+  document.getElementById('sCred').innerHTML = `${doneCr} <i>/ ${TOTAL_CR}</i>`;
+  document.getElementById('sDone').innerHTML = `${nDone} <i>/ ${CURSOS.length}</i>`;
+  document.getElementById('sDoing').textContent = nDoing;
+  document.getElementById('sOpen').textContent = nOpen;
+  document.getElementById('sPct').textContent = Math.round(doneCr / TOTAL_CR * 100) + '%';
+  document.getElementById('barDone').style.width = (doneCr / TOTAL_CR * 100) + '%';
+  document.getElementById('barDoing').style.width = (doingCr / TOTAL_CR * 100) + '%';
+  applyHighlight();
+  draw();
+}
+
+/* ---------- Flechas ---------- */
+const svg = document.getElementById('links');
+const layer = document.getElementById('linkLayer');
+const NS = 'http://www.w3.org/2000/svg';
+
+function focusId(){ return hoverId || selectedId; }
+
+function applyHighlight(){
+  const f = focusId();
+  Object.values(els).forEach(e => e.classList.remove('hl-pre','hl-post','hl-self'));
+  if(!f) return;
+  els[f].classList.add('hl-self');
+  BY[f].req.forEach(r => els[r].classList.add('hl-pre'));
+  POST[f].forEach(p => els[p].classList.add('hl-post'));
+}
+
+function path(from, to, cls, w, marker, op){
+  const b = board.getBoundingClientRect();
+  const a = els[from].getBoundingClientRect();
+  const z = els[to].getBoundingClientRect();
+  const x1 = a.right - b.left, y1 = a.top + a.height / 2 - b.top;
+  const x2 = z.left - b.left - 3, y2 = z.top + z.height / 2 - b.top;
+  const dx = Math.max(40, (x2 - x1) / 2);
+  const p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', `M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}`);
+  p.setAttribute('fill', 'none');
+  p.setAttribute('stroke', cls);
+  p.setAttribute('stroke-width', w);
+  p.setAttribute('stroke-linecap', 'round');
+  p.setAttribute('opacity', op);
+  p.setAttribute('marker-end', `url(#${marker})`);
+  layer.appendChild(p);
+}
+
+function draw(){
+  svg.setAttribute('width', board.scrollWidth);
+  svg.setAttribute('height', board.scrollHeight);
+  layer.innerHTML = '';
+  const f = focusId();
+  if(showAll){
+    CURSOS.forEach(c => c.req.forEach(r => path(r, c.id, '#7fb4ea', 1.6, 'aBase', f ? .25 : .7)));
+  }
+  if(f){
+    BY[f].req.forEach(r => path(r, f, '#1f63c9', 3, 'aPre', 1));
+    POST[f].forEach(p => path(f, p, '#0891b2', 3, 'aPost', 1));
+  }
+}
+
+/* ---------- Modal ---------- */
+const overlay = document.getElementById('overlay');
+const modal = document.getElementById('modal');
+
+function openModal(id){
+  selectedId = id;
+  renderModal();
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden', 'false');
+  draw(); applyHighlight();
+}
+function closeModal(){
+  selectedId = null;
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden', 'true');
+  draw(); applyHighlight();
+}
+
+function renderModal(){
+  const id = selectedId; if(!id) return;
+  const c = BY[id];
+  const locked = !isOpen(id) && st[id] === 0;
+  const miss = missing(id);
+  const reqLi = c.req.length
+    ? c.req.map(r => `<li class="go ${st[r] === 2 ? 'ok' : 'no'}" data-go="${r}"><span class="tick">${st[r] === 2 ? '✓' : ''}</span>${BY[r].n}</li>`).join('')
+    : '';
+  const postLi = POST[id].length
+    ? POST[id].map(p => {
+        const need = missing(p).filter(x => x !== id).length;
+        const note = st[id] === 2 ? '' : '';
+        return `<li class="go next" data-go="${p}"><span class="tick">→</span>${BY[p].n}${need && st[id] !== 2 ? ` <small style="color:var(--muted)">(le faltarían ${need} más)</small>` : ''}${note}</li>`;
+      }).join('')
+    : '';
+  modal.innerHTML = `
+    <div class="m-cycle">Ciclo ${c.c}${c.code ? ' · ' + c.code : ''}</div>
+    <h3>${c.n}</h3>
+    <div class="m-sub">${c.cr} créditos${c.opts ? ' · ' + c.opts : ''}</div>
+    <div class="seg">
+      <button data-v="0" class="${st[id] === 0 ? 'sel' : ''}" ${locked ? 'disabled' : ''}>Pendiente</button>
+      <button data-v="1" class="${st[id] === 1 ? 'sel' : ''}" ${locked ? 'disabled' : ''}>En curso</button>
+      <button data-v="2" class="${st[id] === 2 ? 'sel' : ''}" ${locked ? 'disabled' : ''}>Finalizado</button>
+    </div>
+    ${locked ? `<div class="warn">🔒 Curso bloqueado: ${miss.length === 1 ? 'falta finalizar 1 requisito' : 'faltan finalizar ' + miss.length + ' requisitos'}.</div>` : ''}
+    <div class="m-sec"><h4>Requisitos</h4>${reqLi ? `<ul class="m-list">${reqLi}</ul>` : '<div class="m-none">Este curso no tiene requisitos.</div>'}</div>
+    <div class="m-sec"><h4>Cursos que abre (${POST[id].length})</h4>${postLi ? `<ul class="m-list">${postLi}</ul>` : '<div class="m-none">No es requisito de ningún otro curso.</div>'}</div>
+    <button class="btn on close" id="mClose">Cerrar</button>`;
+  modal.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setStatus(id, +b.dataset.v)));
+  modal.querySelectorAll('[data-go]').forEach(li => li.addEventListener('click', () => { selectedId = li.dataset.go; renderModal(); draw(); applyHighlight(); }));
+  document.getElementById('mClose').addEventListener('click', closeModal);
+}
+
+function setStatus(id, v){
+  if(!isOpen(id) && v > 0) return;
+  const old = st[id];
+  st[id] = v;
+  let reset = 0;
+  if(old === 2 && v !== 2){
+    descendants(id).forEach(d => { if(st[d] > 0){ st[d] = 0; reset++; } });
+  }
+  save(); update(); renderModal();
+  if(reset) toast(`Se reiniciaron ${reset} curso${reset > 1 ? 's' : ''} que dependían de este.`);
+}
+
+overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+/* ---------- Controles ---------- */
+const FILTERS = [['all','Todos'],['open','Disponibles'],['doing','En curso'],['done','Finalizados'],['locked','Bloqueados']];
+const fbox = document.getElementById('filters');
+FILTERS.forEach(([k, label]) => {
+  const b = document.createElement('button');
+  b.className = 'btn' + (k === 'all' ? ' on' : '');
+  b.textContent = label;
+  b.addEventListener('click', () => {
+    filter = k;
+    [...fbox.children].forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    update();
+  });
+  fbox.appendChild(b);
+});
+
+document.getElementById('btnLines').addEventListener('click', e => {
+  showAll = !showAll;
+  e.currentTarget.classList.toggle('on', showAll);
+  e.currentTarget.textContent = showAll ? 'Ocultar flechas' : 'Mostrar todas las flechas';
+  draw();
+});
+document.getElementById('btnReset').addEventListener('click', () => {
+  if(!confirm('¿Reiniciar todo tu avance? Esta acción no se puede deshacer.')) return;
+  CURSOS.forEach(c => st[c.id] = 0);
+  save(); update(); toast('Avance reiniciado.');
+});
+
+let toastT;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ---------- Inicio ---------- */
+load(); build(); update();
+window.addEventListener('resize', draw);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+window.addEventListener('load', draw);
+</script>
+</body>
 </html>
 
 
