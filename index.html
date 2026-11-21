@@ -74,8 +74,9 @@ header.top{padding:28px clamp(16px,4vw,48px) 8px}
 
 /* ---------- Tablero ---------- */
 .scroller{overflow:auto;padding:18px clamp(16px,4vw,48px) 40px}
-.board{position:relative;display:flex;gap:46px;width:max-content;align-items:flex-start}
+.board{--colw:236px;position:relative;display:grid;column-gap:46px;row-gap:12px;width:max-content;align-items:start}
 svg#links{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
+svg#linksTop{position:absolute;left:0;top:0;pointer-events:none;z-index:6;overflow:visible}
 .cycle{position:relative;z-index:1;width:236px;flex:none}
 .cycle-head{
   color:#fff;border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;
@@ -85,7 +86,7 @@ svg#links{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:
 .cycle-head .meta{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;opacity:.92;margin-top:2px}
 .cycle-head .mini{height:5px;background:rgba(255,255,255,.3);border-radius:99px;margin-top:8px;overflow:hidden}
 .cycle-head .mini i{display:block;height:100%;background:#fff;border-radius:99px;transition:width .4s}
-.cards{display:flex;flex-direction:column;gap:12px}
+.cards{display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
 
 /* ---------- Tarjetas ---------- */
 .card{
@@ -220,9 +221,38 @@ select.in{cursor:pointer}
 .card.done .mini-seg button.sel[data-v="2"]{background:#fff;color:var(--blue-600);border-color:#fff}
 .mini-seg button:disabled{opacity:.45;cursor:not-allowed}
 
+/* ---------- University of London ---------- */
+:root{--indigo:#4457d9;--indigo-d:#2f3fa8}
+.uol-bg{grid-column:1/-1;grid-row:3/5;margin:10px -18px -14px;border-radius:24px;background:linear-gradient(180deg,rgba(68,87,217,.10),rgba(56,189,248,.10));border:2px dashed rgba(68,87,217,.28);z-index:0;pointer-events:none}
+.uol-banner{grid-column:1/-1;grid-row:3;position:relative;z-index:1;margin-top:30px}
+.uol-title{position:sticky;left:14px;width:min(620px,calc(100vw - 60px))}
+.uol-title h2{margin:0;font-size:1.15rem;color:var(--indigo-d)}
+.uol-title p{margin:2px 0 0;font-size:.82rem;font-weight:700;color:var(--muted)}
+.uol-cell{grid-row:4;padding-bottom:8px}
+.card.uol{box-shadow:inset 6px 0 0 var(--indigo),var(--shadow);padding-left:17px}
+.card.uol.locked{box-shadow:inset 6px 0 0 #b6bfee}
+.card.uol.open{border-color:#8f9df0;box-shadow:inset 6px 0 0 var(--indigo),0 0 0 4px rgba(68,87,217,.16),var(--shadow)}
+.card.uol.doing{border-color:var(--indigo);background:linear-gradient(135deg,#eef0ff,#dde3ff)}
+.card.uol.doing .chip{background:var(--indigo)}
+.card.uol.done{background:linear-gradient(135deg,#2f3fa8,#5a78ee)}
+.card.uol.open .chip{background:#e8ebff;color:var(--indigo-d)}
+.card.uol .cr.tag{background:#e3e8ff;color:var(--indigo-d)}
+.card.uol.done .cr.tag{background:rgba(255,255,255,.25);color:#fff}
+.card.uol .opens{color:var(--indigo-d);background:#f0f2ff;border-color:#cdd5fb}
+.card.uol.locked .opens{background:#f3f7fb;color:#7f97b0;border-color:#d5e0ec}
+.card.uol.done .opens{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.35)}
+.card.uol.hl-pre{box-shadow:inset 6px 0 0 var(--indigo),0 0 0 4px rgba(31,99,201,.35)}
+.card.uol.hl-post{box-shadow:inset 6px 0 0 var(--indigo),0 0 0 4px rgba(6,182,212,.4)}
+.card.uol.hl-self{box-shadow:inset 6px 0 0 var(--indigo),0 0 0 4px rgba(15,42,82,.35)}
+.clause{margin-top:8px;padding:10px;border-radius:12px;background:#f5f6ff;border:1px solid #dfe3fb}
+.clause.cl-ok{background:#edf9ff;border-color:var(--sky-200)}
+.cl-h{font-weight:800;font-size:.8rem;color:var(--indigo-d);margin-bottom:6px}
+.cl-btn{margin-top:8px;font-size:.75rem;padding:7px 12px;box-shadow:none;border:1.5px solid var(--sky-200)}
+.e-tag{flex:1 1 100%;font-size:.72rem;font-weight:800;color:var(--indigo-d)}
+.seg.two{grid-template-columns:repeat(2,1fr)}
+
 @media (max-width:600px){
-  .cycle{width:210px}
-  .board{gap:36px}
+  .board{--colw:210px;column-gap:36px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -246,11 +276,12 @@ select.in{cursor:pointer}
     <div class="stat"><small>Créditos académicos</small><b id="sCred">0</b><span class="sub" id="sCredSub"></span></div>
     <div class="stat"><small>Promedio ponderado</small><b id="sAvg">–</b><span class="sub" id="sAvgSub"></span></div>
     <div class="stat"><small>EFE completadas</small><b id="sEfe">0 <i>/ 4</i></b></div>
+    <div class="stat"><small>Módulos UoL</small><b id="sUol">0 <i>/ 0</i></b><span class="sub">Doble grado · sin créditos</span></div>
     <div class="stat"><small>Cursos obligatorios finalizados</small><b id="sDone">0 <i>/ 0</i></b></div>
     <div class="stat"><small>En curso</small><b id="sDoing">0</b></div>
     <div class="stat"><small>Disponibles ahora</small><b id="sOpen">0</b></div>
     <div class="stat progress-wrap">
-      <div class="bar-label"><span>Avance de cursos obligatorios</span><span id="sPct">0%</span></div>
+      <div class="bar-label"><span>Avance para egresar (214 créditos)</span><span id="sPct">0%</span></div>
       <div class="bar"><div class="done" id="barDone"></div><div class="doing" id="barDoing"></div></div>
     </div>
   </div>
@@ -264,7 +295,7 @@ select.in{cursor:pointer}
       <span><i class="dot done"></i>Finalizado</span>
     </div>
   </div>
-  <p class="hint">Haz clic en un curso para marcarlo como en curso o finalizado. Pasa el cursor (o abre un curso) para ver sus conexiones: <b style="color:var(--blue-600)">azul oscuro</b> = requisitos, <b style="color:#0891b2">turquesa</b> = cursos que abre.</p>
+  <p class="hint">Haz clic en un curso para marcarlo como en curso o finalizado. Pasa el cursor (o abre un curso) para ver sus conexiones: <b style="color:var(--blue-600)">azul oscuro</b> = requisitos, <b style="color:#0891b2">turquesa</b> = cursos que abre. Los módulos de la <b style="color:var(--indigo-d)">University of London</b> están en la franja inferior.</p>
 </header>
 
 <div class="scroller" id="scroller">
@@ -277,13 +308,14 @@ select.in{cursor:pointer}
       </defs>
       <g id="linkLayer"></g>
     </svg>
+    <svg id="linksTop" xmlns="http://www.w3.org/2000/svg"><g id="linkLayerTop"></g></svg>
   </div>
 </div>
 
 <section class="extras" id="extras">
   <div class="panel">
     <h2>Cursos electivos</h2>
-    <p class="psub">Escribe el nombre y los créditos. Los electivos finalizados suman a tus créditos académicos y entran al promedio ponderado.</p>
+    <p class="psub">Para egresar necesitas 21 créditos de electivos (214 − 193). Los finalizados suman a tus créditos académicos y entran al promedio. Los 4 marcados «Requisito UoL» ya están listados: escribe cuántos créditos valen.</p>
     <div id="elList"></div>
     <div id="elTotal" class="psub" style="margin-top:10px"></div>
     <button class="btn on" id="btnAddEl" type="button">+ Agregar electivo</button>
@@ -303,9 +335,9 @@ select.in{cursor:pointer}
 
 <script>
 /* =========================================================
-   DATOS · fuente: malla "Negocios Internacionales – Plan 2027" (PDF)
-   y documento "Cursos UP y requisitos".
-   Para editar un requisito, solo cambia la lista `req` del curso.
+   DATOS · malla UP "Negocios Internacionales – Plan 2027" (PDF),
+   documento "Cursos UP y requisitos" y documento "UOL CURSOS".
+   Para editar un requisito, cambia la lista `req` (UP) o `up` / `cl` (UoL).
    ========================================================= */
 const CURSOS = [
   // ---- Ciclo 0
@@ -375,33 +407,106 @@ const CURSOS = [
   {id:'psoc', c:10, n:'Proyección Social', cr:4, req:['bci1','bci2']},
 ];
 
+/* ---- University of London (doble grado) ----
+   Sin créditos: no suman a los 214 ni entran al promedio.
+   up: requisitos UP. Ids de cursos UP, o 'el:clave' para un electivo UP. Deben estar FINALIZADOS.
+   cl: requisitos UoL. Cada grupo = "al menos 1 módulo de {…}". Según el documento es
+       "before or while" (puede estar en curso) -> ver UOL_ALLOW_CONCURRENT.
+   rpl: módulo reconocido por aprendizajes previos (se marca cuando esté completado). */
+const A_MAT = ['MT105A','MT1103','MT1012','MT1021','ST1074','ST1111','MT1186','MT1174'];
+const UOL = [
+  {id:'MN1178', code:'MN1178', n:'Business and Management in a Global Context', up:[], cl:[]},
+  {id:'AC1025', code:'AC1025', n:'Principles of Accounting', up:['el:pracc'], cl:[]},
+  {id:'IS3167', code:'IS3167', n:'Management and Innovation of E-Business', up:['tec'], cl:[]},
+  {id:'EC1002', code:'EC1002', n:'Introduction to Economics', rpl:true, up:['eco1','eco2'], cl:[]},
+  {id:'MT105A', code:'MT105A', n:'Mathematics 1 (half course)', rpl:true, up:['mat1'], cl:[]},
+  {id:'ST104A', code:'ST104A', n:'Statistics 1 (half course)', rpl:true, up:['est1'], cl:[]},
+  {id:'FN2191', code:'FN2191', n:'Principles of Corporate Finance', up:['fc1'],
+    cl:[['EC1002'], [...A_MAT, 'MT105B']]},
+  {id:'MN2032', code:'MN2032', n:'Management Science Methods', up:['el:mcgo'],
+    cl:[['ST104A','ST1006','ST1007','ST1101','ST1074','ST1111','ST1215'], ['MT105A','MT1103','MT1012','MT1021','MT1186','MT1174']]},
+  {id:'MN3075', code:'MN3075', n:'Human Resources Management', up:['ihrm'], cl:[['MN1178']]},
+  {id:'MN3141', code:'MN3141', n:'Marketing Management', up:['mkt'], cl:[['MN1178']]},
+  {id:'AC2097', code:'AC2097', n:'Management Accounting', up:['el:mgacc'], cl:[['AC1025','AC1019','AC1113']]},
+  {id:'MN3119', code:'MN3119 / MN3212', n:'Strategy', up:['de'], cl:[['EC1002'], [...A_MAT]]},
+  {id:'MN2177', code:'MN2177', n:'Core Management Concepts', up:['el:coremg'], cl:[['MN1178']]},
+];
+// Electivos UP que piden los módulos UoL (créditos no indicados en tus documentos: los escribes tú)
+const REQ_ELECTIVES = [
+  {key:'mgacc',  n:'Management Accounting', para:'AC2097'},
+  {key:'pracc',  n:'Principles of Accounting', para:'AC1025'},
+  {key:'coremg', n:'Core Management Concepts', para:'MN2177'},
+  {key:'mcgo',   n:'Métodos Cuantitativos para la Gestión en las Organizaciones', para:'MN2032'},
+];
+
 /* =========================================================
-   LÓGICA
+   CONFIGURACIÓN Y LÓGICA
    ========================================================= */
-const KEY = 'up-ni-flujograma-2027-v1';
+const KEY  = 'up-ni-flujograma-2027-v1';
 const KEY2 = 'up-ni-flujograma-2027-v2';
-const MAX_NOTA = 20;   // escala de notas (0 a MAX_NOTA)
-const SS_MIN = 55;     // Servicio Social: se requieren MÁS de 55 créditos académicos finalizados
+const MAX_NOTA = 20;            // escala de notas (0 a MAX_NOTA)
+const SS_MIN = 55;              // Servicio Social: MÁS de 55 créditos académicos finalizados
+const TOTAL_GRAD = 214;         // créditos para egresar (obligatorios + electivos)
+const UOL_ALLOW_CONCURRENT = true;  // UoL: "before or while" -> un módulo en curso ya cuenta como requisito UoL
 const EFE_DEF = [
   {k:'dep', n:'Deporte o Arte', d:'Sin requisito'},
   {k:'ss',  n:'Servicio Social', d:'Requiere más de 55 créditos académicos acumulados'},
   {k:'inn', n:'Innovación o Investigación', d:'Sin requisito registrado'},
   {k:'int', n:'Internacionalización', d:'Sin requisito registrado'},
 ];
+
 const BY = Object.fromEntries(CURSOS.map(c => [c.id, c]));
-const POST = {}; CURSOS.forEach(c => POST[c.id] = []);
+const UBY = Object.fromEntries(UOL.map(u => [u.id, u]));
+const POST = {}; CURSOS.forEach(c => POST[c.id] = []);          // dependientes UP de cada curso UP
 CURSOS.forEach(c => c.req.forEach(r => POST[r].push(c.id)));
 const NCYCLES = Math.max(...CURSOS.map(c => c.c)) + 1;
-const TOTAL_CR = CURSOS.reduce((s, c) => s + c.cr, 0);
+const TOTAL_CR = CURSOS.reduce((s, c) => s + c.cr, 0);          // 193 obligatorios
+const ELEC_NEEDED = TOTAL_GRAD - TOTAL_CR;                      // 21 de electivos
 
-let st = {};            // id -> 0 pendiente · 1 en curso · 2 finalizado
-let grades = {};        // id -> nota final
-let electives = [];     // {uid, name, cr, s (1 en curso | 2 finalizado), g}
+// Grafo de flechas (UP y UoL): PRE[id] = de quién depende, PST[id] = a quién abre
+const PRE = {}, PST = {};
+[...CURSOS.map(c => c.id), ...UOL.map(u => u.id)].forEach(id => { PRE[id] = []; PST[id] = []; });
+CURSOS.forEach(c => c.req.forEach(r => PRE[c.id].push(r)));
+UOL.forEach(u => {
+  u.up.forEach(r => { if(BY[r]) PRE[u.id].push(r); });
+  u.cl.forEach(cl => cl.forEach(code => { if(UBY[code] && !PRE[u.id].includes(code)) PRE[u.id].push(code); }));
+});
+Object.keys(PRE).forEach(id => PRE[id].forEach(p => PST[p].push(id)));
+
+// Dónde se dibuja cada módulo UoL: bajo el ciclo UP desde el que ya puede habilitarse
+const UCOL = {}, UDEP = {};
+function ucol(id){
+  if(id in UCOL) return UCOL[id];
+  let m = 0; const u = UBY[id];
+  u.up.forEach(r => { if(BY[r]) m = Math.max(m, BY[r].c); });
+  u.cl.forEach(cl => cl.forEach(code => { if(UBY[code]) m = Math.max(m, ucol(code)); }));
+  return UCOL[id] = m;
+}
+function udep(id){
+  if(id in UDEP) return UDEP[id];
+  let d = 0; PRE[id].forEach(p => { if(UBY[p]) d = Math.max(d, udep(p) + 1); });
+  return UDEP[id] = d;
+}
+
+let st = {};            // id UP -> 0 pendiente · 1 en curso · 2 finalizado
+let grades = {};        // id UP -> nota final
+let electives = [];     // {uid, key?, name, cr, s (0 pend. · 1 en curso · 2 finalizado), g}
 let efe = {};           // k -> {s, note}
+let uolSt = {};         // id UoL -> 0 · 1 · 2
+let uolManual = {};     // 'idUoL#nGrupo' -> true (cumplido con otro módulo no listado)
 let filter = 'all';
 let showAll = false;
 let hoverId = null;
 let selectedId = null;
+
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const fmt = n => String(Math.round(n * 100) / 100);
+
+function ensureFixed(){
+  const fixed = REQ_ELECTIVES.map(r => electives.find(e => e.key === r.key) ||
+    {uid:'req-' + r.key, key:r.key, name:r.n, cr:0, s:0, g:null});
+  electives = [...fixed, ...electives.filter(e => !e.key)];
+}
 
 function load(){
   let raw = null;
@@ -410,31 +515,38 @@ function load(){
     st = raw.st; grades = raw.grades || {};
     electives = Array.isArray(raw.electives) ? raw.electives : [];
     efe = raw.efe || {};
+    uolSt = raw.uolSt || {}; uolManual = raw.uolManual || {};
   }else{
-    try{ st = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ st = {}; }  // migra el avance de la versión anterior
+    try{ st = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ st = {}; }  // migra versión 1
   }
   CURSOS.forEach(c => { if(![0,1,2].includes(st[c.id])) st[c.id] = 0; });
   EFE_DEF.forEach(d => {
     const e = efe[d.k] || {};
     efe[d.k] = {s: [0,1,2].includes(e.s) ? e.s : 0, note: typeof e.note === 'string' ? e.note : ''};
   });
-  electives = electives.map((e, i) => ({
-    uid: e.uid || Date.now() + i,
-    name: typeof e.name === 'string' ? e.name : '',
-    cr: Math.max(0, parseInt(e.cr) || 0),
-    s: e.s === 2 ? 2 : 1,
-    g: (e.s === 2 && typeof e.g === 'number' && e.g >= 0 && e.g <= MAX_NOTA) ? e.g : null
-  }));
-  // sanea: nada avanzado si sus requisitos no están finalizados
-  let changed = true;
-  while(changed){
-    changed = false;
-    CURSOS.forEach(c => { if(st[c.id] > 0 && !isOpen(c.id)){ st[c.id] = 0; changed = true; } });
-  }
-  Object.keys(grades).forEach(id => { if(!BY[id] || st[id] !== 2 || typeof grades[id] !== 'number') delete grades[id]; });
+  electives = electives.filter(e => e && typeof e === 'object').map((e, i) => {
+    const req = REQ_ELECTIVES.find(r => r.key === e.key);
+    const s = [0,1,2].includes(e.s) ? e.s : 1;
+    return {
+      uid: e.uid || Date.now() + i,
+      key: req ? req.key : undefined,
+      name: req ? req.n : (typeof e.name === 'string' ? e.name : ''),
+      cr: Math.max(0, parseInt(e.cr) || 0),
+      s: req ? s : (s === 2 ? 2 : 1),
+      g: (s === 2 && typeof e.g === 'number' && e.g >= 0 && e.g <= MAX_NOTA) ? e.g : null
+    };
+  });
+  ensureFixed();
+  UOL.forEach(u => {
+    if(![0,1,2].includes(uolSt[u.id])) uolSt[u.id] = 0;
+    if(u.rpl && uolSt[u.id] === 1) uolSt[u.id] = 0;
+  });
+  Object.keys(uolManual).forEach(k => { if(!UBY[k.split('#')[0]]) delete uolManual[k]; });
+  settle();
 }
-function save(){ try{ localStorage.setItem(KEY2, JSON.stringify({st, grades, electives, efe})); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY2, JSON.stringify({st, grades, electives, efe, uolSt, uolManual})); }catch(e){} }
 
+/* ---------- Estados UP ---------- */
 const isOpen  = id => BY[id].req.every(r => st[r] === 2);
 const missing = id => BY[id].req.filter(r => st[r] !== 2);
 function stateOf(id){
@@ -442,10 +554,37 @@ function stateOf(id){
   if(st[id] === 1) return 'doing';
   return isOpen(id) ? 'open' : 'locked';
 }
-function descendants(id){
-  const out = new Set(), q = [id];
-  while(q.length){ POST[q.shift()].forEach(p => { if(!out.has(p)){ out.add(p); q.push(p); } }); }
-  return [...out];
+
+/* ---------- Estados UoL ---------- */
+const minLvl = UOL_ALLOW_CONCURRENT ? 1 : 2;
+const elState = key => (electives.find(e => e.key === key) || {s:0}).s;
+const upRefDone = r => r.startsWith('el:') ? elState(r.slice(3)) === 2 : st[r] === 2;
+const upRefName = r => r.startsWith('el:') ? REQ_ELECTIVES.find(x => x.key === r.slice(3)).n : BY[r].n;
+const clauseOk = (u, i) => !!uolManual[u.id + '#' + i] || u.cl[i].some(code => UBY[code] && uolSt[code] >= minLvl);
+const uolMissing = id => {
+  const u = UBY[id];
+  return u.up.filter(r => !upRefDone(r)).length + u.cl.filter((_, i) => !clauseOk(u, i)).length;
+};
+const uolOpen = id => uolMissing(id) === 0;
+function stateOfU(id){
+  if(uolSt[id] === 2) return 'done';
+  if(uolSt[id] === 1) return 'doing';
+  return uolOpen(id) ? 'open' : 'locked';
+}
+
+/* Reinicia lo que ya no cumple sus requisitos (UP y UoL). Devuelve cuántos reinició. */
+function settle(){
+  let total = 0, changed = true;
+  while(changed){
+    changed = false;
+    CURSOS.forEach(c => { if(st[c.id] > 0 && !isOpen(c.id)){ st[c.id] = 0; delete grades[c.id]; changed = true; total++; } });
+    UOL.forEach(u => { if(uolSt[u.id] > 0 && !uolOpen(u.id)){ uolSt[u.id] = 0; changed = true; total++; } });
+  }
+  Object.keys(grades).forEach(id => {
+    const c = BY[id];
+    if(!c || st[id] !== 2 || c.c === 0 || typeof grades[id] !== 'number') delete grades[id];
+  });
+  return total;
 }
 
 /* ---------- Construcción del DOM ---------- */
@@ -453,23 +592,33 @@ const board = document.getElementById('board');
 const els = {};
 const headEls = [];
 
+function bindCard(b, id){
+  b.addEventListener('click', () => openModal(id));
+  b.addEventListener('mouseenter', () => { hoverId = id; draw(); applyHighlight(); });
+  b.addEventListener('mouseleave', () => { hoverId = null; draw(); applyHighlight(); });
+  b.addEventListener('focus', () => { hoverId = id; draw(); applyHighlight(); });
+  b.addEventListener('blur', () => { hoverId = null; draw(); applyHighlight(); });
+  els[id] = b;
+}
+
 function build(){
+  board.style.gridTemplateColumns = `repeat(${NCYCLES}, var(--colw))`;
   for(let i = 0; i < NCYCLES; i++){
-    const col = document.createElement('section');
-    col.className = 'cycle';
     const hue = 196 + (i / (NCYCLES - 1)) * 22;
     const light = 46 - (i / (NCYCLES - 1)) * 12;
     const list = CURSOS.filter(c => c.c === i);
     const cr = list.reduce((s, c) => s + c.cr, 0);
-    col.innerHTML = `
-      <div class="cycle-head" style="background:linear-gradient(135deg,hsl(${hue} 92% ${light}%),hsl(${hue + 8} 88% ${light + 8}%))">
-        <h2>Ciclo ${i}</h2>
-        <div class="meta"><span data-k="n">0/${list.length} cursos</span><span>${cr} créditos</span></div>
-        <div class="mini"><i data-k="bar"></i></div>
-      </div>
-      <div class="cards"></div>`;
-    headEls[i] = col.querySelector('.cycle-head');
-    const wrap = col.querySelector('.cards');
+    const head = document.createElement('div');
+    head.className = 'cycle-head';
+    head.style.cssText = `grid-column:${i + 1};grid-row:1;background:linear-gradient(135deg,hsl(${hue} 92% ${light}%),hsl(${hue + 8} 88% ${light + 8}%))`;
+    head.innerHTML = `
+      <h2>Ciclo ${i}</h2>
+      <div class="meta"><span data-k="n">0/${list.length} cursos</span><span>${cr} créditos</span></div>
+      <div class="mini"><i data-k="bar"></i></div>`;
+    headEls[i] = head;
+    const wrap = document.createElement('div');
+    wrap.className = 'cards';
+    wrap.style.cssText = `grid-column:${i + 1};grid-row:2`;
     list.forEach(c => {
       const b = document.createElement('button');
       b.type = 'button';
@@ -480,45 +629,83 @@ function build(){
         <div class="name">${c.n}</div>
         ${c.opts ? `<div class="opts">${c.opts}</div>` : ''}
         <div class="foot"><span class="chip" data-k="chip"></span><span class="opens" data-k="opens"></span></div>`;
-      b.addEventListener('click', () => openModal(c.id));
-      b.addEventListener('mouseenter', () => { hoverId = c.id; draw(); applyHighlight(); });
-      b.addEventListener('mouseleave', () => { hoverId = null; draw(); applyHighlight(); });
-      b.addEventListener('focus', () => { hoverId = c.id; draw(); applyHighlight(); });
-      b.addEventListener('blur', () => { hoverId = null; draw(); applyHighlight(); });
-      els[c.id] = b;
+      bindCard(b, c.id);
       wrap.appendChild(b);
     });
-    board.appendChild(col);
+    board.append(head, wrap);
+  }
+
+  // Franja University of London
+  const bg = document.createElement('div');
+  bg.className = 'uol-bg';
+  const ban = document.createElement('div');
+  ban.className = 'uol-banner';
+  ban.innerHTML = `<div class="uol-title"><h2>University of London · Doble grado</h2>
+    <p>Sin créditos (no suman a los ${TOTAL_GRAD} ni al promedio). Cada módulo aparece bajo el ciclo UP desde el que ya puedes empezar a habilitarlo.</p></div>`;
+  board.append(bg, ban);
+  for(let i = 0; i < NCYCLES; i++){
+    const cell = document.createElement('div');
+    cell.className = 'cards uol-cell';
+    cell.style.cssText = `grid-column:${i + 1};grid-row:4`;
+    UOL.filter(u => ucol(u.id) === i).sort((a, b) => udep(a.id) - udep(b.id)).forEach(u => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'card uol';
+      b.dataset.id = u.id;
+      b.innerHTML = `
+        <div class="top"><span class="code">${u.code}</span><span class="cr tag">UoL</span></div>
+        <div class="name">${u.n}</div>
+        ${u.rpl ? '<div class="opts">Reconocimiento de aprendizajes previos (RPL)</div>' : ''}
+        <div class="foot"><span class="chip" data-k="chip"></span><span class="opens" data-k="opens"></span></div>`;
+      bindCard(b, u.id);
+      cell.appendChild(b);
+    });
+    board.appendChild(cell);
   }
 }
 
 /* ---------- Actualización de la vista ---------- */
+function setState(el, s){ el.classList.remove('locked','open','doing','done'); el.classList.add(s); }
+
+function setOpens(el, id){
+  const o = el.querySelector('[data-k=opens]');
+  const posts = PST[id];
+  const up = posts.filter(p => BY[p]).length, uo = posts.filter(p => UBY[p]).length;
+  if(!posts.length){ o.style.display = 'none'; return; }
+  o.style.display = '';
+  o.innerHTML = up && uo ? `🔓 Abre <b>${up}</b> + ${uo} UoL` : up ? `🔓 Abre <b>${up}</b>` : `🔓 Abre <b>${uo}</b>${BY[id] ? ' UoL' : ''}`;
+  o.title = 'Abre: ' + posts.map(p => (BY[p] || UBY[p]).n).join(' · ');
+}
+
 function update(){
-  let doneCr = 0, doingCr = 0, nDone = 0, nDoing = 0, nOpen = 0;
+  let nDone = 0, nDoing = 0, nOpen = 0, uDone = 0;
   CURSOS.forEach(c => {
     const s = stateOf(c.id), el = els[c.id];
-    el.classList.remove('locked','open','doing','done');
-    el.classList.add(s);
+    setState(el, s);
     const chip = el.querySelector('[data-k=chip]');
     const m = missing(c.id).length;
     if(s === 'locked')      chip.innerHTML = `🔒 ${m === 1 ? 'Falta' : 'Faltan'} <b>${m}</b>`;
     else if(s === 'open')   chip.textContent = 'Disponible';
     else if(s === 'doing')  chip.textContent = 'En curso';
     else                    chip.textContent = typeof grades[c.id] === 'number' ? '✓ Nota ' + fmt(grades[c.id]) : '✓ Finalizado';
-    const o = el.querySelector('[data-k=opens]');
-    const n = POST[c.id].length;
-    if(n){
-      o.style.display = '';
-      o.innerHTML = `🔓 Abre <b>${n}</b>`;
-      o.title = 'Abre: ' + POST[c.id].map(x => BY[x].n).join(' · ');
-    }else{
-      o.style.display = 'none';
-    }
-    if(s === 'done'){ doneCr += c.cr; nDone++; }
-    if(s === 'doing'){ doingCr += c.cr; nDoing++; }
+    setOpens(el, c.id);
+    if(s === 'done') nDone++;
+    if(s === 'doing') nDoing++;
     if(s === 'open') nOpen++;
-    const match = filter === 'all' || filter === s;
-    el.classList.toggle('dim', !match);
+    el.classList.toggle('dim', !(filter === 'all' || filter === s));
+  });
+  UOL.forEach(u => {
+    const s = stateOfU(u.id), el = els[u.id];
+    setState(el, s);
+    const chip = el.querySelector('[data-k=chip]');
+    const m = uolMissing(u.id);
+    if(s === 'locked')      chip.innerHTML = `🔒 ${m === 1 ? 'Falta' : 'Faltan'} <b>${m}</b>`;
+    else if(s === 'open')   chip.textContent = 'Disponible';
+    else if(s === 'doing')  chip.textContent = 'En curso';
+    else                    chip.textContent = u.rpl ? '✓ Completado' : '✓ Finalizado';
+    setOpens(el, u.id);
+    if(s === 'done') uDone++;
+    el.classList.toggle('dim', !(filter === 'all' || filter === s));
   });
 
   for(let i = 0; i < NCYCLES; i++){
@@ -527,13 +714,10 @@ function update(){
     headEls[i].querySelector('[data-k=n]').textContent = `${d}/${list.length} cursos`;
     headEls[i].querySelector('[data-k=bar]').style.width = (d / list.length * 100) + '%';
   }
-
   document.getElementById('sDone').innerHTML = `${nDone} <i>/ ${CURSOS.length}</i>`;
   document.getElementById('sDoing').textContent = nDoing;
   document.getElementById('sOpen').textContent = nOpen;
-  document.getElementById('sPct').textContent = Math.round(doneCr / TOTAL_CR * 100) + '%';
-  document.getElementById('barDone').style.width = (doneCr / TOTAL_CR * 100) + '%';
-  document.getElementById('barDoing').style.width = (doingCr / TOTAL_CR * 100) + '%';
+  document.getElementById('sUol').innerHTML = `${uDone} <i>/ ${UOL.length}</i>`;
   refreshExtras();
   applyHighlight();
   draw();
@@ -541,7 +725,9 @@ function update(){
 
 /* ---------- Flechas ---------- */
 const svg = document.getElementById('links');
+const svgTop = document.getElementById('linksTop');
 const layer = document.getElementById('linkLayer');
+const layerTop = document.getElementById('linkLayerTop');
 const NS = 'http://www.w3.org/2000/svg';
 
 function focusId(){ return hoverId || selectedId; }
@@ -549,41 +735,54 @@ function focusId(){ return hoverId || selectedId; }
 function applyHighlight(){
   const f = focusId();
   Object.values(els).forEach(e => e.classList.remove('hl-pre','hl-post','hl-self'));
-  if(!f) return;
+  if(!f || !els[f]) return;
   els[f].classList.add('hl-self');
-  BY[f].req.forEach(r => els[r].classList.add('hl-pre'));
-  POST[f].forEach(p => els[p].classList.add('hl-post'));
+  PRE[f].forEach(r => els[r].classList.add('hl-pre'));
+  PST[f].forEach(p => els[p].classList.add('hl-post'));
 }
 
-function path(from, to, cls, w, marker, op){
+function path(from, to, color, w, marker, op, target){
   const b = board.getBoundingClientRect();
   const a = els[from].getBoundingClientRect();
   const z = els[to].getBoundingClientRect();
-  const x1 = a.right - b.left, y1 = a.top + a.height / 2 - b.top;
-  const x2 = z.left - b.left - 3, y2 = z.top + z.height / 2 - b.top;
-  const dx = Math.max(40, (x2 - x1) / 2);
+  let d;
+  if(z.left > a.right + 10){                       // el destino queda a la derecha: lado a lado
+    const x1 = a.right - b.left, y1 = a.top + a.height / 2 - b.top;
+    const x2 = z.left - b.left - 3, y2 = z.top + z.height / 2 - b.top;
+    const dx = Math.max(40, (x2 - x1) / 2);
+    d = `M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}`;
+  }else{                                           // misma columna: de abajo hacia arriba
+    const down = z.top >= a.top;
+    const x1 = a.left + a.width / 2 - b.left, x2 = z.left + z.width / 2 - b.left;
+    const y1 = (down ? a.bottom : a.top) - b.top;
+    const y2 = (down ? z.top - 3 : z.bottom + 3) - b.top;
+    const dy = Math.max(30, Math.abs(y2 - y1) / 2) * (down ? 1 : -1);
+    d = `M${x1},${y1} C${x1},${y1 + dy} ${x2},${y2 - dy} ${x2},${y2}`;
+  }
   const p = document.createElementNS(NS, 'path');
-  p.setAttribute('d', `M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}`);
+  p.setAttribute('d', d);
   p.setAttribute('fill', 'none');
-  p.setAttribute('stroke', cls);
+  p.setAttribute('stroke', color);
   p.setAttribute('stroke-width', w);
   p.setAttribute('stroke-linecap', 'round');
   p.setAttribute('opacity', op);
   p.setAttribute('marker-end', `url(#${marker})`);
-  layer.appendChild(p);
+  target.appendChild(p);
 }
 
 function draw(){
-  svg.setAttribute('width', board.scrollWidth);
-  svg.setAttribute('height', board.scrollHeight);
-  layer.innerHTML = '';
+  [svg, svgTop].forEach(s => {
+    s.setAttribute('width', board.scrollWidth);
+    s.setAttribute('height', board.scrollHeight);
+  });
+  layer.innerHTML = ''; layerTop.innerHTML = '';
   const f = focusId();
   if(showAll){
-    CURSOS.forEach(c => c.req.forEach(r => path(r, c.id, '#7fb4ea', 1.6, 'aBase', f ? .25 : .7)));
+    Object.keys(PRE).forEach(to => PRE[to].forEach(from => path(from, to, '#7fb4ea', 1.6, 'aBase', f ? .25 : .7, layer)));
   }
-  if(f){
-    BY[f].req.forEach(r => path(r, f, '#1f63c9', 3, 'aPre', 1));
-    POST[f].forEach(p => path(f, p, '#0891b2', 3, 'aPost', 1));
+  if(f && els[f]){
+    PRE[f].forEach(r => path(r, f, '#1f63c9', 3, 'aPre', 1, layerTop));
+    PST[f].forEach(p => path(f, p, '#0891b2', 3, 'aPost', 1, layerTop));
   }
 }
 
@@ -605,21 +804,32 @@ function closeModal(){
   draw(); applyHighlight();
 }
 
+function bindGo(){
+  modal.querySelectorAll('[data-go]').forEach(li => li.addEventListener('click', () => {
+    selectedId = li.dataset.go; renderModal(); draw(); applyHighlight();
+  }));
+  const c = document.getElementById('mClose');
+  if(c) c.addEventListener('click', closeModal);
+}
+
 function renderModal(){
-  const id = selectedId; if(!id) return;
-  const c = BY[id];
+  if(!selectedId) return;
+  if(UBY[selectedId]) return renderUoLModal();
+  const id = selectedId, c = BY[id];
   const locked = !isOpen(id) && st[id] === 0;
   const miss = missing(id);
-  const reqLi = c.req.length
-    ? c.req.map(r => `<li class="go ${st[r] === 2 ? 'ok' : 'no'}" data-go="${r}"><span class="tick">${st[r] === 2 ? '✓' : ''}</span>${BY[r].n}</li>`).join('')
-    : '';
-  const postLi = POST[id].length
-    ? POST[id].map(p => {
-        const need = missing(p).filter(x => x !== id).length;
-        const note = st[id] === 2 ? '' : '';
-        return `<li class="go next" data-go="${p}"><span class="tick">→</span>${BY[p].n}${need && st[id] !== 2 ? ` <small style="color:var(--muted)">(le faltarían ${need} más)</small>` : ''}${note}</li>`;
-      }).join('')
-    : '';
+  const reqLi = c.req.map(r => `<li class="go ${st[r] === 2 ? 'ok' : 'no'}" data-go="${r}"><span class="tick">${st[r] === 2 ? '✓' : ''}</span>${BY[r].n}</li>`).join('');
+  const postLi = POST[id].map(p => {
+    const need = missing(p).filter(x => x !== id).length;
+    return `<li class="go next" data-go="${p}"><span class="tick">→</span>${BY[p].n}${need && st[id] !== 2 ? ` <small style="color:var(--muted)">(le faltarían ${need} más)</small>` : ''}</li>`;
+  }).join('');
+  const uoLi = PST[id].filter(p => UBY[p]).map(p =>
+    `<li class="go next" data-go="${p}"><span class="tick">→</span>${UBY[p].code} · ${UBY[p].n}</li>`).join('');
+  const gradeSec = c.c === 0
+    ? `<div class="m-sec"><div class="m-none">Ciclo 0: sus créditos se cuentan como ganados, pero su nota y su crédito no entran al promedio ponderado.</div></div>`
+    : st[id] === 2
+      ? `<div class="m-sec"><h4>Nota final (0 a ${MAX_NOTA})</h4><input class="in" id="gIn" type="number" inputmode="decimal" min="0" max="${MAX_NOTA}" step="0.01" placeholder="Ej. 16.5" value="${typeof grades[id] === 'number' ? grades[id] : ''}"></div>`
+      : '';
   modal.innerHTML = `
     <div class="m-cycle">Ciclo ${c.c}${c.code ? ' · ' + c.code : ''}</div>
     <h3>${c.n}</h3>
@@ -630,9 +840,10 @@ function renderModal(){
       <button data-v="2" class="${st[id] === 2 ? 'sel' : ''}" ${locked ? 'disabled' : ''}>Finalizado</button>
     </div>
     ${locked ? `<div class="warn">🔒 Curso bloqueado: ${miss.length === 1 ? 'falta finalizar 1 requisito' : 'faltan finalizar ' + miss.length + ' requisitos'}.</div>` : ''}
-    ${st[id] === 2 ? `<div class="m-sec"><h4>Nota final (0 a ${MAX_NOTA})</h4><input class="in" id="gIn" type="number" inputmode="decimal" min="0" max="${MAX_NOTA}" step="0.01" placeholder="Ej. 16.5" value="${typeof grades[id] === 'number' ? grades[id] : ''}"></div>` : ''}
+    ${gradeSec}
     <div class="m-sec"><h4>Requisitos</h4>${reqLi ? `<ul class="m-list">${reqLi}</ul>` : '<div class="m-none">Este curso no tiene requisitos.</div>'}</div>
-    <div class="m-sec"><h4>Cursos que abre (${POST[id].length})</h4>${postLi ? `<ul class="m-list">${postLi}</ul>` : '<div class="m-none">No es requisito de ningún otro curso.</div>'}</div>
+    <div class="m-sec"><h4>Cursos que abre (${POST[id].length})</h4>${postLi ? `<ul class="m-list">${postLi}</ul>` : '<div class="m-none">No es requisito de ningún otro curso UP.</div>'}</div>
+    ${uoLi ? `<div class="m-sec"><h4>Ayuda a habilitar en UoL (${PST[id].filter(p => UBY[p]).length})</h4><ul class="m-list">${uoLi}</ul></div>` : ''}
     <button class="btn on close" id="mClose">Cerrar</button>`;
   modal.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setStatus(id, +b.dataset.v)));
   const gIn = document.getElementById('gIn');
@@ -642,21 +853,72 @@ function renderModal(){
     else{ delete grades[id]; gIn.style.borderColor = gIn.value === '' ? '' : '#e0554a'; }
     save(); update();
   });
-  modal.querySelectorAll('[data-go]').forEach(li => li.addEventListener('click', () => { selectedId = li.dataset.go; renderModal(); draw(); applyHighlight(); }));
-  document.getElementById('mClose').addEventListener('click', closeModal);
+  bindGo();
+}
+
+function renderUoLModal(){
+  const id = selectedId, u = UBY[id];
+  const s = uolSt[id];
+  const locked = !uolOpen(id) && s === 0;
+  const miss = uolMissing(id);
+  const opts = u.rpl ? [[0,'Pendiente'],[2,'Completado']] : [[0,'Pendiente'],[1,'En curso'],[2,'Finalizado']];
+  const upLi = u.up.map(r => {
+    const ok = upRefDone(r), isEl = r.startsWith('el:');
+    return `<li class="${ok ? 'ok' : 'no'} ${isEl ? '' : 'go'}" ${isEl ? '' : `data-go="${r}"`}><span class="tick">${ok ? '✓' : ''}</span>${upRefName(r)}${isEl ? ' <small style="color:var(--muted)">(electivo UP)</small>' : ''}</li>`;
+  }).join('');
+  const clHtml = u.cl.map((cl, i) => {
+    const ok = clauseOk(u, i), manual = !!uolManual[u.id + '#' + i];
+    const tracked = cl.filter(c => UBY[c]), other = cl.filter(c => !UBY[c]);
+    const items = tracked.map(code => {
+      const sv = uolSt[code], good = sv >= minLvl;
+      return `<li class="go ${good ? 'ok' : 'no'}" data-go="${code}"><span class="tick">${good ? '✓' : ''}</span>${UBY[code].code} · ${UBY[code].n}${sv === 1 ? ' <small>(en curso)</small>' : ''}</li>`;
+    }).join('');
+    return `<div class="clause ${ok ? 'cl-ok' : ''}">
+      <div class="cl-h">${ok ? '✓' : '•'} Al menos 1 módulo de:</div>
+      ${items ? `<ul class="m-list">${items}</ul>` : ''}
+      ${other.length ? `<div class="m-none" style="margin-top:6px">También valen (no están en tu documento): ${other.join(', ')}</div>` : ''}
+      <button class="btn cl-btn" type="button" data-man="${i}">${manual ? 'Quitar “cumplido con otro módulo”' : 'Ya lo cumplí con otro módulo de esta lista'}</button>
+    </div>`;
+  }).join('');
+  const posts = PST[id].filter(p => UBY[p]);
+  const postLi = posts.map(p => `<li class="go next" data-go="${p}"><span class="tick">→</span>${UBY[p].code} · ${UBY[p].n}</li>`).join('');
+  modal.innerHTML = `
+    <div class="m-cycle" style="color:var(--indigo)">University of London · ${u.code}</div>
+    <h3>${u.n}</h3>
+    <div class="m-sub">Sin créditos · no suma a los ${TOTAL_GRAD} ni al promedio${u.rpl ? ' · reconocimiento de aprendizajes previos' : ''}</div>
+    <div class="seg ${u.rpl ? 'two' : ''}">
+      ${opts.map(([v, t]) => `<button data-v="${v}" class="${s === v ? 'sel' : ''}" ${locked ? 'disabled' : ''}>${t}</button>`).join('')}
+    </div>
+    ${locked ? `<div class="warn">🔒 Módulo bloqueado: ${miss === 1 ? 'falta 1 requisito' : 'faltan ' + miss + ' requisitos'}.</div>` : ''}
+    <div class="m-sec"><h4>Requisitos UP (deben estar finalizados)</h4>${upLi ? `<ul class="m-list">${upLi}</ul>` : '<div class="m-none">Sin requisito UP.</div>'}</div>
+    <div class="m-sec"><h4>Requisitos UoL${UOL_ALLOW_CONCURRENT ? ' (pueden estar en curso)' : ''}</h4>${clHtml || '<div class="m-none">Sin requisito UoL.</div>'}</div>
+    <div class="m-sec"><h4>Módulos UoL que abre (${posts.length})</h4>${postLi ? `<ul class="m-list">${postLi}</ul>` : '<div class="m-none">No es requisito de otro módulo de tu lista.</div>'}</div>
+    <button class="btn on close" id="mClose">Cerrar</button>`;
+  modal.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setUoL(id, +b.dataset.v)));
+  modal.querySelectorAll('[data-man]').forEach(b => b.addEventListener('click', () => {
+    const k = id + '#' + b.dataset.man;
+    if(uolManual[k]) delete uolManual[k]; else uolManual[k] = true;
+    const reset = settle();
+    save(); update(); renderModal();
+    if(reset) toast(`Se reiniciaron ${reset} curso${reset > 1 ? 's' : ''} que dependían de esto.`);
+  }));
+  bindGo();
 }
 
 function setStatus(id, v){
   if(!isOpen(id) && v > 0) return;
-  const old = st[id];
   st[id] = v;
   if(v !== 2) delete grades[id];
-  let reset = 0;
-  if(old === 2 && v !== 2){
-    descendants(id).forEach(d => { if(st[d] > 0){ st[d] = 0; delete grades[d]; reset++; } });
-  }
+  const reset = settle();
   save(); update(); renderModal();
   if(reset) toast(`Se reiniciaron ${reset} curso${reset > 1 ? 's' : ''} que dependían de este.`);
+}
+function setUoL(id, v){
+  if(!uolOpen(id) && v > 0) return;
+  uolSt[id] = v;
+  const reset = settle();
+  save(); update(); renderModal();
+  if(reset) toast(`Se reiniciaron ${reset} módulo${reset > 1 ? 's' : ''} que dependían de este.`);
 }
 
 overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
@@ -685,9 +947,10 @@ document.getElementById('btnLines').addEventListener('click', e => {
   draw();
 });
 document.getElementById('btnReset').addEventListener('click', () => {
-  if(!confirm('¿Reiniciar todo tu avance (cursos, notas, electivos y EFE)? Esta acción no se puede deshacer.')) return;
+  if(!confirm('¿Reiniciar todo tu avance (cursos, notas, electivos, EFE y UoL)? Esta acción no se puede deshacer.')) return;
   CURSOS.forEach(c => st[c.id] = 0);
-  grades = {}; electives = [];
+  grades = {}; electives = []; ensureFixed();
+  uolSt = {}; uolManual = {}; UOL.forEach(u => uolSt[u.id] = 0);
   EFE_DEF.forEach(d => efe[d.k] = {s:0, note:''});
   save(); renderElectives(); update(); toast('Avance reiniciado.');
 });
@@ -700,24 +963,24 @@ function toast(msg){
 }
 
 /* ---------- Créditos, promedio, electivos y EFE ---------- */
-const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const fmt = n => String(Math.round(n * 100) / 100);
-
 function creditStats(){
-  let oblig = 0, elec = 0, elecDoing = 0, wsum = 0, wcr = 0, nG = 0, noG = 0;
+  let oblig = 0, obligDoing = 0, elec = 0, elecDoing = 0, wsum = 0, wcr = 0, nG = 0, noG = 0;
   CURSOS.forEach(c => {
+    if(st[c.id] === 1) obligDoing += c.cr;
     if(st[c.id] !== 2) return;
-    oblig += c.cr;
+    oblig += c.cr;                    // el ciclo 0 sí cuenta como crédito ganado…
+    if(c.c === 0) return;             // …pero ni su nota ni su crédito entran al promedio
     const g = grades[c.id];
     if(typeof g === 'number'){ wsum += g * c.cr; wcr += c.cr; nG++; } else noG++;
   });
   electives.forEach(e => {
     if(e.cr <= 0) return;
     if(e.s === 1){ elecDoing += e.cr; return; }
+    if(e.s !== 2) return;
     elec += e.cr;
     if(typeof e.g === 'number'){ wsum += e.g * e.cr; wcr += e.cr; nG++; } else noG++;
   });
-  return {oblig, elec, elecDoing, acad: oblig + elec, wsum, wcr, nG, noG};
+  return {oblig, obligDoing, elec, elecDoing, acad: oblig + elec, wsum, wcr, nG, noG};
 }
 
 function refreshExtras(){
@@ -726,36 +989,46 @@ function refreshExtras(){
     efe.ss.s = 0; save();
     toast('Servicio Social vuelve a Pendiente: ya no tienes más de ' + SS_MIN + ' créditos.');
   }
-  document.getElementById('sCred').textContent = s.acad;
-  document.getElementById('sCredSub').textContent = `Oblig. ${s.oblig}/${TOTAL_CR} · Electivos ${s.elec}`;
+  document.getElementById('sCred').innerHTML = `${s.acad} <i>/ ${TOTAL_GRAD}</i>`;
+  document.getElementById('sCredSub').textContent = `Oblig. ${s.oblig}/${TOTAL_CR} · Electivos ${s.elec}/${ELEC_NEEDED}`;
   document.getElementById('sAvg').textContent = s.wcr > 0 ? (s.wsum / s.wcr).toFixed(2) : '–';
   document.getElementById('sAvgSub').textContent = s.nG
     ? `${s.nG} curso${s.nG > 1 ? 's' : ''} con nota` + (s.noG ? ` · ${s.noG} sin nota (no cuentan)` : '')
     : (s.noG ? `${s.noG} finalizado${s.noG > 1 ? 's' : ''} sin nota` : 'Ingresa notas en los cursos finalizados');
   const nE = EFE_DEF.filter(d => efe[d.k].s === 2).length;
   document.getElementById('sEfe').innerHTML = `${nE} <i>/ ${EFE_DEF.length}</i>`;
+  const pct = Math.min(100, s.acad / TOTAL_GRAD * 100);
+  const pdo = Math.min(100 - pct, (s.obligDoing + s.elecDoing) / TOTAL_GRAD * 100);
+  document.getElementById('sPct').textContent = Math.round(pct) + '%';
+  document.getElementById('barDone').style.width = pct + '%';
+  document.getElementById('barDoing').style.width = pdo + '%';
   document.getElementById('elTotal').textContent =
-    `Electivos finalizados: ${s.elec} cr. · en curso: ${s.elecDoing} cr.`;
+    `Electivos finalizados: ${s.elec} de ${ELEC_NEEDED} cr. necesarios · en curso: ${s.elecDoing} cr.`;
   renderEFE(s.acad);
 }
 
 const elBox = document.getElementById('elList');
 function renderElectives(){
-  elBox.innerHTML = electives.length ? '' : '<div class="m-none">Aún no agregaste electivos.</div>';
+  elBox.innerHTML = '';
   electives.forEach(e => {
+    const req = REQ_ELECTIVES.find(r => r.key === e.key);
     const row = document.createElement('div');
     row.className = 'el-row';
     row.innerHTML = `
-      <input class="in e-name" placeholder="Nombre del electivo" value="${esc(e.name)}">
+      ${req ? `<div class="e-tag">Requisito UoL · ayuda a abrir ${req.para}</div>` : ''}
+      <input class="in e-name" placeholder="Nombre del electivo" value="${esc(e.name)}" ${req ? 'disabled' : ''}>
       <input class="in e-cr" type="number" inputmode="numeric" min="1" max="12" step="1" placeholder="Cr." title="Créditos" value="${e.cr || ''}">
-      <select class="in e-st"><option value="1" ${e.s === 1 ? 'selected' : ''}>En curso</option><option value="2" ${e.s === 2 ? 'selected' : ''}>Finalizado</option></select>
+      <select class="in e-st">${(req ? [0,1,2] : [1,2]).map(v =>
+        `<option value="${v}" ${e.s === v ? 'selected' : ''}>${['Pendiente','En curso','Finalizado'][v]}</option>`).join('')}</select>
       ${e.s === 2 ? `<input class="in e-nt" type="number" inputmode="decimal" min="0" max="${MAX_NOTA}" step="0.01" placeholder="Nota" title="Nota final" value="${typeof e.g === 'number' ? e.g : ''}">` : ''}
-      <button class="e-del" type="button" title="Quitar electivo" aria-label="Quitar electivo">✕</button>`;
+      ${req ? '' : '<button class="e-del" type="button" title="Quitar electivo" aria-label="Quitar electivo">✕</button>'}`;
     row.querySelector('.e-name').addEventListener('input', ev => { e.name = ev.target.value; save(); });
     row.querySelector('.e-cr').addEventListener('input', ev => { e.cr = Math.max(0, parseInt(ev.target.value) || 0); save(); refreshExtras(); });
     row.querySelector('.e-st').addEventListener('change', ev => {
       e.s = +ev.target.value; if(e.s !== 2) e.g = null;
-      save(); renderElectives(); refreshExtras();
+      const reset = settle();
+      save(); renderElectives(); update();
+      if(reset) toast(`Se reiniciaron ${reset} módulo${reset > 1 ? 's' : ''} UoL que dependían de este electivo.`);
     });
     const nt = row.querySelector('.e-nt');
     if(nt) nt.addEventListener('input', ev => {
@@ -764,7 +1037,8 @@ function renderElectives(){
       ev.target.style.borderColor = (ev.target.value !== '' && e.g === null) ? '#e0554a' : '';
       save(); refreshExtras();
     });
-    row.querySelector('.e-del').addEventListener('click', () => {
+    const del = row.querySelector('.e-del');
+    if(del) del.addEventListener('click', () => {
       electives = electives.filter(x => x.uid !== e.uid);
       save(); renderElectives(); refreshExtras();
     });
@@ -814,7 +1088,7 @@ load(); build(); renderElectives(); update();
 window.addEventListener('resize', draw);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
 window.addEventListener('load', draw);
+
 </script>
 </body>
 </html>
-
